@@ -1,0 +1,47 @@
+## Set Working directory
+setwd("C:\\Users\\200015912\\Documents\\VJ_Local_Data\\Study\\R\\Exploratory Data Analysis")
+
+## Read the Hospital Text file.
+tblhpwr <- read.table("data/household_power_consumption.txt", header = TRUE, sep = ";", na.strings = "NA", stringsAsFactors=F, dec = ".", colClasses = NA)
+
+## Verify Columns imported
+lapply(tblhpwr,class)
+
+tblhpwr$Date.Time <- strptime(paste(tblhpwr$Date,tblhpwr$Time),"%d/%m/%Y %H:%M:%S")
+
+tblhpwrSelect <- subset(tblhpwr, as.Date(Date.Time) >= "2007-02-01" & as.Date(Date.Time) <= "2007-02-02" )
+
+## tblhpwrSelect1 <- tblhpwr[Date.Time >= "2007-02-01" & Date.Time <= "2007-02-02"]
+
+# Plot-1
+
+#hist(as.numeric(tblhpwrSelect$Global_active_power), ylim=c(0,1200))
+
+hist(as.numeric(tblhpwrSelect$Global_active_power), xlab="Global Active Power (kilowatts)", main="Global Active Power", col="red")
+
+ 
+# Plot2
+#--Load extra library:
+## if not already installed, then run:
+# install.packages("ggplot2")
+require(ggplot2)
+
+#--Calculate month from date & create factor:
+#middayweather$month <- with(middayweather, factor(as.POSIXlt(Date)$mon, label=month.abb))
+#--Calculate year from date:
+#middayweather$year <- with(middayweather, 1900 + as.POSIXlt(Date)$year)
+
+#--Only use complete years:
+#middayweather <- subset(middayweather, year %in% 2007:2009)
+
+#-----Plot data as boxplot summary for each month:
+theme_set(theme_gray(base_size = 11))
+p <- ggplot(data=tblhpwrSelect, aes(as.POSIXlt(tblhpwrSelect$Date.Time)$day, as.numeric(tblhpwrSelect$Global_active_power) )) + 
+ geom_boxplot() + 
+ #facet_wrap( ~ year, nrow=1) + 
+ #scale_x_discrete(breaks=as.POSIXlt(tblhpwrSelect$Date.Time)$day) +
+ xlab("") + 
+ ylab("Global Active Power")
+
+#--Save plot to pdf:
+ggsave(p, file="temperature_monthly_boxplot.pdf", width=9, height=3.5)
