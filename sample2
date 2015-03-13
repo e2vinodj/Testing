@@ -1,0 +1,36 @@
+## Set Working directory
+setwd("C:\\Users\\200015912\\Documents\\VJ_Local_Data\\Study\\R\\Reproducible Research")
+
+## Read the Activity file.
+activity <- read.table("activity.csv", header = TRUE, sep = ",", na.strings = "NA", stringsAsFactors=F, dec = ".", colClasses = NA)
+
+## Verify Columns imported
+lapply(activity,class)
+
+## Convert Character Date to Posixlt date
+activity$date <- strptime(activity$date,"%Y-%m-%d")
+
+
+#1. Calculate the total number of steps taken per day
+require ("plyr")
+sum_activity <-ddply(activity, "date", summarize, totalsteps=sum(steps,na.rm=TRUE))
+
+
+#2. Make a histogram of the total number of steps taken each day
+hist(sum_activity$totalsteps, xlab="Total Steps taken each Day", main="Total Number Of Steps", col="red")
+
+
+#3.Calculate and report the mean and median of the total number of steps taken per day
+
+sum_activity2 <-ddply(activity, "date", summarize, MeanSteps=mean(steps,na.rm=TRUE), MedianSteps=median(steps,na.rm=TRUE))
+
+
+#4 Make a time series plot (i.e. type = "l" ) of the 5-minute interval (x-axis) and 
+#  the average number of steps taken, averaged across all days (y-axis)
+
+sum_activity3 <-ddply(activity, "interval", summarize, MeanSteps=mean(steps,na.rm=TRUE))
+
+
+plot(sum_activity3$interval,sum_activity3$MeanSteps,"l", col="black", axes = TRUE, xlab="", ylab="Average Number of Steps")
+
+
